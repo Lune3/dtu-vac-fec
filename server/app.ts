@@ -1,14 +1,10 @@
-require('dotenv').config();
-import express from "express";
-import * as fs from "fs";
-import { Prisma } from "@prisma/client";
-import { PdfReader } from "pdfreader";
+import 'dotenv/config'
+import express, { Request, Response } from "express";
+import fileIndexRoute from "./routes/fileIndexRoute"
 
 const app = express();
 
-app.get('/', async (req,res) => {
-    
-})
+app.use('/',fileIndexRoute);
 
 app.listen(process.env.PORT || 3000,() => {
     console.log('Server Running');
