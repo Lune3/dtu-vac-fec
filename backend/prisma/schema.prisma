@@ -12,3 +12,27 @@ datasource db {
   provider = "postgresql"
   url      = env("DATABASE_URL")
 }
+
+model User{
+  Id String @id @default(uuid())
+  name String @unique
+  comment Comment[]
+}
+
+model Course{
+  Id String @id @default(uuid())
+  name String @unique
+  comment Comment[]
+}
+
+model Comment{
+  Id String @id @default(uuid())
+  title String
+  commentDate DateTime @default(now())
+  commentCourse String
+  course Course? @relation(fields: [commentCourse],references: [Id])
+  teacherName String
+  gradeObtain String
+  commentUser String
+  user User? @relation(fields: [commentUser], references: [Id])
+}
