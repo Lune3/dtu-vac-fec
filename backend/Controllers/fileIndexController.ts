@@ -39,16 +39,28 @@ function isElectiveId(extractId : string) : boolean{
 
 
 function extractElectives(electivePdf : string) : Array<string> {
-    const electivesArray : string[] = [];
-    
+    let electivesArray : string[] = [];
+    let startStoring : boolean = false;
+    let store : string = "";
     for(let i = 0;i < electivePdf.length - 6;i++){
         const extractId = electivePdf.slice(i,i + 6).trimEnd();
         const checkElectiveId : boolean = isElectiveId(extractId);
         if(checkElectiveId){
-            electivesArray.push(extractId);
+            if(store.length === 0 && startStoring === false){
+                startStoring = true;
+            }
+            else{
+                store = store.trim();
+                store = store.replace(/(\|.*)/,'');
+                electivesArray.push(store);
+                store = "";
+            }
+        }
+        if(startStoring === true){
+            store += electivePdf[i];
         }
     }
-
+    electivesArray = electivesArray.filter((elective) => elective != "");
     return electivesArray;
 }
 
@@ -79,7 +91,9 @@ export const readPdf = async (req: Request, res: Response, next: NextFunction) =
         let electivePdf = await parsePdf("./pdfFile/electives.pdf");
         if(typeof(electivePdf) === 'string'){
             const electiveCode = extractElectives(electivePdf);
-            console.log(electiveCode);
+            electiveCode.forEach(elective => {
+                console.log(elective);
+            });
         }
         res.send(`${electivePdf}`);
     }
