@@ -29,40 +29,6 @@ const addCoursesToDb = async (courseArray: Array<string>) => {
     }
 }
 
-function isElectiveId(extractId : string) : boolean{
-    const courseIdPattern = /(CE|CH|MC|CS|CO|SE|ME|PE|AE|EN|EP|EE|EC|BT|IT|MGT|MGS|MGM|NST|MSPH|BBA|DD|FB|FIE|FSE|MGK|HU|DD)[\s\-]?\d{3}/g;
-
-    const firstResult = courseIdPattern.test(extractId);
-    if(firstResult === true)return true;
-    return false;
-}
-
-
-function extractElectives(electivePdf : string) : Array<string> {
-    let electivesArray : string[] = [];
-    let startStoring : boolean = false;
-    let store : string = "";
-    for(let i = 0;i < electivePdf.length - 6;i++){
-        const extractId = electivePdf.slice(i,i + 6).trimEnd();
-        const checkElectiveId : boolean = isElectiveId(extractId);
-        if(checkElectiveId){
-            if(store.length === 0 && startStoring === false){
-                startStoring = true;
-            }
-            else{
-                store = store.trim();
-                store = store.replace(/(\|.*)/,'');
-                electivesArray.push(store);
-                store = "";
-            }
-        }
-        if(startStoring === true){
-            store += electivePdf[i];
-        }
-    }
-    electivesArray = electivesArray.filter((elective) => elective != "");
-    return electivesArray;
-}
 
 export const readPdf = async (req: Request, res: Response, next: NextFunction) => {
     let coursesCount: number = -1;
@@ -90,10 +56,16 @@ export const readPdf = async (req: Request, res: Response, next: NextFunction) =
         // }
         let electivePdf = await parsePdf("./pdfFile/electives.pdf");
         if(typeof(electivePdf) === 'string'){
-            const electiveCode = extractElectives(electivePdf);
-            electiveCode.forEach(elective => {
-                console.log(elective);
-            });
+            const electivePattern = /[A-Z]{2,3}\s?\-?\s?\d{2,3}.*?(?=[A-Z]{2,3}\s?-?\s?\d{2,3})/g;
+            const electives = electivePdf.match(electivePattern);
+            if(electives){
+                const electivesArray = electives.map((elective) => elective.trim());
+                electivesArray.forEach((elective) => {
+                    elective = elective.replace(/(\d\..*|Department.*|\|.*|\s+(Delhi.*|FIE-1.*|MBE ALS2.*|EC \– 329 Analog Signal Processing))/,'').trim();
+                    elective = elective.replace(/\s*\d+$/,'').trim();
+                    console.log(elective);
+                })
+            }
         }
         res.send(`${electivePdf}`);
     }
@@ -101,6 +73,9 @@ export const readPdf = async (req: Request, res: Response, next: NextFunction) =
         next();
     }
 };
+
+
+//[A-Z]{2,3}\s?\-?\s?\d{2,3}.*?(?=[A-Z]{2,3}\s?-?\s?\d{2,3})
 
 
 
