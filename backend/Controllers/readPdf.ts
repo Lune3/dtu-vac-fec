@@ -57,6 +57,12 @@ export const readPdf = async (req: Request, res: Response, next: NextFunction) =
                     const electivesArray = electives.map((elective) => {
                         elective = elective.replace(/(\d\..*|Department.*|\|.*|\s+(Delhi.*|FIE-1.*|MBE ALS2.*|EC \– 329 Analog Signal Processing))/,'');
                         elective = elective.replace(/\s*\d+$/,'').trim();
+                        const courseCode = elective.match(/[A-Z]{2,3}\s?\-?\s?\d{2,3}/g);
+                        elective = elective.replace(/[A-Z]{2,3}\s?\-?\s?\d{2,3}/g,'');
+                        if(courseCode){
+                            courseCode[0] = courseCode[0].replace(/(\s|\-)/g,'');
+                            elective = courseCode[0] + elective;
+                        }
                         return elective;
                     });
                     const uniqueElectivesArray = [...new Set(electivesArray)];
