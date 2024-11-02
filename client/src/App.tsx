@@ -1,10 +1,12 @@
-import { Header } from "./components/Header"
+import { Header } from "./components/Header";
+import { useState } from "react";
 
 function App() {
-
+  const [courseName,setCourseName] = useState<string>("");
+  const [comments,setComments] = useState<object>();
   return (
     <>
-      <Header/>
+      <Header setCourseName={setCourseName} courseName={courseName} setComments = {setComments}/>
     </>
   )
 }
