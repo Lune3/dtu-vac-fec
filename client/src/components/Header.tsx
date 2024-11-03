@@ -3,43 +3,36 @@ import { useEffect, useState } from "react";
 
 type HeaderProps = {
     setCourse: React.Dispatch<React.SetStateAction<string>>,
-    setComments: React.Dispatch<React.SetStateAction<object>>;
 };
 
 
-async function getComment(courseName: string) {
-    const fetchComments = await fetch(`${apiUrl}/comment/${courseName}`, { mode: "cors" });
-    const comments = await fetchComments.json();
-    return comments;
+const fetchCourse = async (courseName: string, setCourse: React.Dispatch<React.SetStateAction<string>>) => {
+    if(courseName != ""){
+        const url = `${apiUrl}/course/${courseName}`;
+        const getCourse = await fetch(url, { mode: "cors" });
+        if (getCourse.status === 200) {
+            const course = await getCourse.json();
+            setCourse(course.course.name);
+        }
+        else if (getCourse.status === 422) {
+            console.log("wrong");
+        }
+        else {
+            console.log("very wrong");
+        }
+    }
 }
 
-
-function Header({ setComments, setCourse }: HeaderProps) {
+function Header({setCourse }: HeaderProps) {
     const [courseName, setCourseName] = useState<string>("");
     useEffect(() => {
-        const courseSubmit = async () => {
-            const url = `${apiUrl}/course/${courseName}`;
-            const getCourse = await fetch(url, { mode: "cors" });
-            if (getCourse.status === 200) {
-                const course = await getCourse.json();
-                setCourse(course.course.name);
-                const comments = await getComment(course.name);
-                setComments(comments);
-            }
-            else if (getCourse.status === 422) {
-                console.log("wrong");
-            }
-            else {
-                console.log("very wrong");
-            }
-        }
-        courseSubmit();
+        fetchCourse(courseName,setCourse);
         return () =>{
             setCourseName("");
         }
     }, [courseName]);
 
-    const foo: React.FormEventHandler<HTMLFormElement> = (e) => {
+    const submitCourse: React.FormEventHandler<HTMLFormElement> = (e) => {
         e.preventDefault();
         const courseData = e.target as HTMLFormElement;
         setCourseName((courseData.elements[0] as HTMLInputElement).value);
@@ -50,7 +43,7 @@ function Header({ setComments, setCourse }: HeaderProps) {
             <div>
                 <h1>Dtu electives and fec</h1>
             </div>
-            <form action="" method="GET" onSubmit={foo}>
+            <form action="" method="GET" onSubmit={submitCourse}>
                 <input type="text" placeholder="Search for a course" maxLength={50} className="border border-black" name="courseName" />
                 <button type="submit" style={{ display: "none" }}></button>
             </form>

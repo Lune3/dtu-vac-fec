@@ -7,8 +7,8 @@ function App() {
   const [comments,setComments] = useState<object | null>(null);
   return (
     <>
-      <Header setCourse={setCourse} setComments = {setComments}/>
-      <Section course={course} comments={comments}/>
+      <Header setCourse={setCourse}/>
+      <Section course={course} comments={comments} setComments={setComments}/>
     </>
   )
 }
