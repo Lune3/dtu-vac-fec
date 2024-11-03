@@ -1,12 +1,14 @@
-import { Header } from "./components/Header";
+import { Header} from "./components/Header";
 import { useState } from "react";
+import { Section } from "./components/Section";
 
 function App() {
-  const [courseName,setCourseName] = useState<string>("");
-  const [comments,setComments] = useState<object>();
+  const [course,setCourse] = useState<string>("");
+  const [comments,setComments] = useState<object | null>(null);
   return (
     <>
-      <Header setCourseName={setCourseName} courseName={courseName} setComments = {setComments}/>
+      <Header setCourse={setCourse} setComments = {setComments}/>
+      <Section course={course} comments={comments}/>
     </>
   )
 }

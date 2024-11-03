@@ -1,8 +1,8 @@
 import { apiUrl } from "../config";
+import { useState } from "react";
 
 type HeaderProps = {
-    courseName : string,
-    setCourseName: React.Dispatch<React.SetStateAction<string>>,
+    setCourse: React.Dispatch<React.SetStateAction<string>>,
     setComments : React.Dispatch<React.SetStateAction<object>>;
 };
 
@@ -13,14 +13,15 @@ async function getComment(courseName : string){
     return comments;
 }   
 
-function Header({courseName , setCourseName, setComments }: HeaderProps){
+function Header({setComments, setCourse}: HeaderProps){
+    const [courseName,setCourseName] = useState<string>("");
     const courseSubmit : React.FormEventHandler<HTMLFormElement> = async (e) => {
         e.preventDefault();
         const url = `${apiUrl}/course/${courseName}`;
-        console.log(courseName);
         const getCourse = await fetch(url,{mode:"cors"});
         if(getCourse.status === 200){
             const course = await getCourse.json(); 
+            setCourse(course.course.name);
             const comments = await getComment(course.name);
             setComments(comments);
         }
