@@ -4,7 +4,7 @@ import { Section } from "./components/Section";
 
 function App() {
   const [course,setCourse] = useState<string>("");
-  const [comments,setComments] = useState<object | null>(null);
+  const [comments,setComments] = useState<object[] | null>(null);
   return (
     <>
       <Header setCourse={setCourse}/>

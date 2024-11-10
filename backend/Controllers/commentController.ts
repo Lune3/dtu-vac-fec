@@ -21,7 +21,6 @@ export const validateComment = [
     body("title").trim().isLength({min:3,max:100}).withMessage('Comment should be between 3 to 100 words')
     .escape(),
     body("teacherName").trim().not().isEmpty().withMessage('Name cannot be empty').isAlpha().withMessage("Must only contains letter"),
-    body("grade").trim().isLength({min:1,max:2}).withMessage('Invalid Grade').matches(/(O|P|F|C){1}|(A|B)\+?/g)
 ]
 
 export const postComment = async (req : Request, res : Response) => {
