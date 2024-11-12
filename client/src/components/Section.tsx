@@ -1,60 +1,77 @@
 import { useEffect } from "react";
 import { apiUrl } from "../config";
 
-type sectionProps = {
-    course: string,
-    comments : object | null,
-    setComments : React.Dispatch<React.SetStateAction<object[] | null>>,
+interface Comment {
+    title: string;
+    teacherName: string;
+    grade: string;
 }
 
+interface Comments {
+    comments: Comment[];
+}
 
-const fetchComments = async (course : string,setComments : React.Dispatch<React.SetStateAction<object | null>>) =>{
-    if(course != ""){
-        const getComments = await fetch(`${apiUrl}/comment/${course}`,);
-        const comments = await getComments.json();
-        console.log(comments);
-        setComments(comments);
+type SectionProps = {
+    course: string;
+    comments: Comments | null;
+    setComments: React.Dispatch<React.SetStateAction<Comments | null>>;
+}
+
+const fetchComments = async (course: string, setComments: React.Dispatch<React.SetStateAction<Comments | null>>) => {
+    if (course !== "") {
+        const getComments = await fetch(`${apiUrl}/comment/${course}`);
+        const commentsData = await getComments.json();
+        console.log(commentsData);
+        setComments(commentsData);
     }
 }
 
-function DefaultCommentView(){
-    return(
+function DefaultCommentView() {
+    return (
         <p>
-            Search for a course to view it's reviews
+            Search for a course to view its reviews
         </p>
-    )
+    );
 }
 
-function PostComment({course,comments,setComments} : sectionProps){
-    const submitComment : React.FormEventHandler<HTMLFormElement> = async (e) => {
+function PostComment({ course, comments, setComments }: SectionProps) {
+    const submitComment: React.FormEventHandler<HTMLFormElement> = async (e) => {
         e.preventDefault();
         const commentData = e.target as HTMLFormElement;
-        console.log((commentData.elements[0] as HTMLInputElement).value,(commentData.elements[1] as HTMLInputElement).value)
+
         try {
-            const comment = await fetch(`${apiUrl}/comment/${course}`,{
-                method:"POST",
-                headers:{
-                    "Content-Type":"application/json",
+            const response = await fetch(`${apiUrl}/comment/${course}`, {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
                 },
-                body:JSON.stringify({title:(commentData.elements[0] as HTMLInputElement).value,teacherName:(commentData.elements[1] as HTMLInputElement).value,grade:(commentData.elements[2] as HTMLInputElement).value})
-            })
-            setComments
+                body: JSON.stringify({
+                    title: (commentData.elements[0] as HTMLInputElement).value,
+                    teacherName: (commentData.elements[1] as HTMLInputElement).value,
+                    grade: (commentData.elements[2] as HTMLInputElement).value,
+                })
+            });
+            const newComment: Comment = await response.json();
+            const updatedComments = [...(comments?.comments || []), newComment];
+            setComments({ comments: updatedComments });
         } catch (error) {
             console.log(error);
         }
-
-    }
+    };
 
     return (
         <>
-            <form action="" onSubmit={submitComment}>
-                <label>Description:
-                    <input type="text" name="title" maxLength={200}/>
+            <form onSubmit={submitComment}>
+                <label>
+                    Description:
+                    <input type="text" name="title" maxLength={200} />
                 </label>
-                <label> Teacher Name:
-                    <input type="text" name="teacherName" maxLength={50}/>
+                <label>
+                    Teacher Name:
+                    <input type="text" name="teacherName" maxLength={50} />
                 </label>
-                <label>Grade Obtained:
+                <label>
+                    Grade Obtained:
                     <select name="grade">
                         <option value="O">O</option>
                         <option value="A+">A+</option>
@@ -75,29 +92,28 @@ function PostComment({course,comments,setComments} : sectionProps){
                 <li>These comments will be actively moderated</li>
             </ul>
         </>
-    )
+    );
 }
 
-function Comments({course,comments,setComments} : sectionProps){
+function CommentsComponent({ course, comments, setComments }: SectionProps) {
     return (
         <>
             <h1>{course}</h1>
-            <PostComment course={course} comments={{}} setComments={setComments}/>
-        </> 
-    )
+            <PostComment course={course} comments={comments} setComments={setComments} />
+        </>
+    );
 }
 
-function Section({course, comments , setComments} : sectionProps){
-
+function Section({ course, comments, setComments }: SectionProps) {
     useEffect(() => {
-        fetchComments(course,setComments);
-    },[course])
+        fetchComments(course, setComments);
+    }, [course]);
 
     return (
         <section>
-            {course === "" ? <DefaultCommentView/> : <Comments course={course} comments={comments} setComments={setComments}/>}
+            {course === "" ? <DefaultCommentView /> : <CommentsComponent course={course} comments={comments} setComments={setComments} />}
         </section>
-    )
+    );
 }
 
-export {Section}
+export { Section };

@@ -11,7 +11,7 @@ export const getComment = async (req : Request,res : Response) => {
                 }
             }
         })
-        res.status(200).json({comments:comments});
+        res.status(200).json({comments});
     } catch (error) {
         console.log("error getting comments",error);
         res.status(500).json({message:"Server error"});
