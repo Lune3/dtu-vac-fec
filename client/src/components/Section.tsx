@@ -2,6 +2,7 @@ import { useEffect } from "react";
 import { apiUrl } from "../config";
 import { CommentComponent } from "./comments";
 import { CommentsType } from "../types";
+import { v4 as uuidv4 } from 'uuid';
 
 type SectionProps = {
     course: string;
@@ -31,6 +32,14 @@ function PostComment({ course, comments, setComments }: SectionProps) {
         e.preventDefault();
         const commentData = e.target as HTMLFormElement;
 
+        const newComment = {
+            Id: uuidv4(), 
+            title: (commentData.elements[0] as HTMLInputElement).value,
+            teacherName: (commentData.elements[1] as HTMLInputElement).value || "N/A",
+            gradeObtain: (commentData.elements[2] as HTMLInputElement).value || "N/A",
+            commentDate: new Date().toISOString(),
+        };
+
         try {
             const response = await fetch(`${apiUrl}/comment/${course}`, {
                 method: "POST",
@@ -39,12 +48,11 @@ function PostComment({ course, comments, setComments }: SectionProps) {
                 },
                 body: JSON.stringify({
                     title: (commentData.elements[0] as HTMLInputElement).value,
-                    teacherName: (commentData.elements[1] as HTMLInputElement).value,
-                    grade: (commentData.elements[2] as HTMLInputElement).value,
+                    teacherName: (commentData.elements[1] as HTMLInputElement).value || "N/A",
+                    grade: (commentData.elements[2] as HTMLInputElement).value || "N/A",
                 })
             });
-            const comment = await response.json(); 
-            const updatedComments = [...(comments?.comments || []),comment];
+            const updatedComments = [...(comments?.comments || []),newComment];
             setComments({ comments: updatedComments });
             console.log(comments);
         } catch (error) {
@@ -57,7 +65,7 @@ function PostComment({ course, comments, setComments }: SectionProps) {
             <form onSubmit={submitComment}>
                 <label>
                     Description:
-                    <input type="text" name="title" maxLength={200} />
+                    <input type="text" name="title" maxLength={200} required/>
                 </label>
                 <label>
                     Teacher Name:
