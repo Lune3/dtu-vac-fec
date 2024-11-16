@@ -1,21 +1,12 @@
 import { Header} from "./components/Header";
 import { useState } from "react";
 import { Section } from "./components/Section";
+import { CommentsType } from "./types";
 
-
-interface Comment {
-  title: string;
-  teacherName: string;
-  grade: string;
-}
-
-interface Comments {
-  comments: Comment[];
-}
 
 function App() {
   const [course,setCourse] = useState<string>("");
-  const [comments,setComments] = useState<Comments | null>({comments:[]});
+  const [comments,setComments] = useState<CommentsType>({comments:[]});
   return (
     <>
       <Header setCourse={setCourse}/>

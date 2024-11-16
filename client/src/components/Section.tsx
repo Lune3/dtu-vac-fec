@@ -1,23 +1,15 @@
 import { useEffect } from "react";
 import { apiUrl } from "../config";
-
-interface Comment {
-    title: string;
-    teacherName: string;
-    grade: string;
-}
-
-interface Comments {
-    comments: Comment[];
-}
+import { CommentComponent } from "./comments";
+import { CommentsType } from "../types";
 
 type SectionProps = {
     course: string;
-    comments: Comments | null;
-    setComments: React.Dispatch<React.SetStateAction<Comments | null>>;
+    comments: CommentsType;
+    setComments: React.Dispatch<React.SetStateAction<CommentsType>>;
 }
 
-const fetchComments = async (course: string, setComments: React.Dispatch<React.SetStateAction<Comments | null>>) => {
+const fetchComments = async (course: string, setComments: React.Dispatch<React.SetStateAction<CommentsType>>) => {
     if (course !== "") {
         const getComments = await fetch(`${apiUrl}/comment/${course}`);
         const commentsData = await getComments.json();
@@ -51,9 +43,10 @@ function PostComment({ course, comments, setComments }: SectionProps) {
                     grade: (commentData.elements[2] as HTMLInputElement).value,
                 })
             });
-            const newComment: Comment = await response.json();
-            const updatedComments = [...(comments?.comments || []), newComment];
+            const comment = await response.json(); 
+            const updatedComments = [...(comments?.comments || []),comment];
             setComments({ comments: updatedComments });
+            console.log(comments);
         } catch (error) {
             console.log(error);
         }
@@ -100,6 +93,7 @@ function CommentsComponent({ course, comments, setComments }: SectionProps) {
         <>
             <h1>{course}</h1>
             <PostComment course={course} comments={comments} setComments={setComments} />
+            <CommentComponent comments={comments}/>
         </>
     );
 }
