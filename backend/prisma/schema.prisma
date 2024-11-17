@@ -15,8 +15,10 @@ datasource db {
 
 model User{
   Id String @id @default(uuid())
-  name String @unique
+  email String @unique
   comment Comment[]
+  isMod Boolean
+  isAdmin Boolean
 }
 
 model Course{
