@@ -48,7 +48,7 @@ function Header({setCourse }: HeaderProps) {
                 <button type="submit" style={{ display: "none" }}></button>
             </form>
             <div>
-                <button>Log In</button>
+                <a href="/auth/google">Log In</a>
                 <picture>
                     change theme
                 </picture>

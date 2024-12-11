@@ -3,11 +3,21 @@ import express, { Express, Request, Response } from "express";
 import rootRouter from './Routes/rootRouter';
 import { courseRouter } from './Routes/courseRouter';
 import { commentRouter } from './Routes/commentRouter';
+import session from "express-session";
 import cors from "cors";
-import passport from 'passport';
-import passportGoogle from 'passport-google-oauth20';
+import { authRouter } from './Routes/authRouter';
+import passport from "passport";
 
 const app : Express = express();
+
+app.use(
+    session({
+      secret: process.env.SESSION_SECRET!,
+      resave: false,
+      saveUninitialized: false,
+    })
+);
+
 app.use(cors<Request>());
 app.use(express.urlencoded({ extended: true}));
 app.use(express.json());
@@ -17,6 +27,7 @@ const PORT = process.env.PORT || 3000
 app.use('/',rootRouter);
 app.use('/course',courseRouter);
 app.use('/comment',commentRouter);
+app.use('/auth/google',authRouter);
 
 app.listen(PORT,() => {
     console.log("server running");

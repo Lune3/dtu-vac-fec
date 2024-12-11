@@ -1,4 +1,5 @@
 import { CommentsType } from "../types";
+import {format} from "date-fns"
 
 type commentProp = {
     comments: CommentsType
@@ -15,9 +16,9 @@ function Comments({comments} : commentProp){
                         <p>Teacher Name: {comment.teacherName}</p>
                         <p>Grade Obtained: {comment.gradeObtain}</p>
                     </div>
-                    <p>{comment.commentDate}</p>
+                    <p>{format(comment.commentDate,'dd/MM/yyyy')}</p>
                 </div> 
-                <p>{comment.title}</p>
+                <p>Description: {comment.title}</p>
             </li>
         )
     })
