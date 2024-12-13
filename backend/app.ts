@@ -6,17 +6,22 @@ import { commentRouter } from './Routes/commentRouter';
 import session from "express-session";
 import cors from "cors";
 import { authRouter } from './Routes/authRouter';
-import passport from "passport";
+import passport from 'passport';
 
 const app : Express = express();
 
 app.use(
     session({
+      cookie:{
+        maxAge:7*24*60*60*1000
+      },
       secret: process.env.SESSION_SECRET!,
       resave: false,
       saveUninitialized: false,
     })
 );
+
+app.use(passport.session());
 
 app.use(cors<Request>());
 app.use(express.urlencoded({ extended: true}));

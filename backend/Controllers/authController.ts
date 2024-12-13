@@ -1,4 +1,4 @@
-import { Request, Response, NextFunction } from "express";
+import { Request,Response} from "express";
 import passportGoogle from "passport-google-oauth20";
 import passport from "passport";
 import prisma from "../db";
@@ -13,7 +13,7 @@ declare global {
         isAdmin: boolean;
       }
     }
-  }
+}
 
 const GoogleStrategy = passportGoogle.Strategy;
 
@@ -21,18 +21,18 @@ const GoogleStrategy = passportGoogle.Strategy;
 passport.use(new GoogleStrategy({
     clientID: process.env.GOOGLE_ID!,
     clientSecret: process.env.GOOGLE_SECRET!,
-    callbackURL: `${process.env.APPURL}/`,
+    callbackURL: `${process.env.SERVERURL}/auth/google/callback`,
     passReqToCallback:true
   },
   async function(req:Request,accessToken, refreshToken, profile : Profile, done) {
+    if(!profile.emails)throw new Error("No email found");
     try{
         let newUser = await prisma.user.findUnique({
             where:{
-                Id:profile.id
+                email:profile.emails[0].value
             }
         })
         if(!newUser){
-            if(!profile.emails)throw new Error("No email found");
             newUser = await prisma.user.create({
                 data:{
                     email:profile.emails[0].value,
@@ -44,6 +44,7 @@ passport.use(new GoogleStrategy({
         done(null,newUser);
     }
     catch(error){
+        console.log(error);
         done(error,false);
     }
   }
@@ -54,11 +55,11 @@ passport.serializeUser((user,done) => {
     done(null,user.Id);
 })
 
-passport.deserializeUser(async (newUser : Express.User,done) => {
+passport.deserializeUser(async (newUserId : string,done) => {
     try{
         const user = await prisma.user.findUnique({
             where:{
-                Id:newUser.Id
+                Id:newUserId
             }
         })
         done(null,user);
