@@ -67,3 +67,13 @@ export const postComment = async (req : Request, res : Response) => {
         }
     }
 };
+
+export const checkAuth = async(req : Request,res : Response,next: NextFunction) =>{
+    const userCookie = req.cookies['connect.sid'];
+    if(!userCookie){
+        res.status(401).send("");
+    }
+    else{
+        next();
+    }
+}

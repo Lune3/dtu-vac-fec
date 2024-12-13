@@ -7,6 +7,7 @@ import session from "express-session";
 import cors from "cors";
 import { authRouter } from './Routes/authRouter';
 import passport from 'passport';
+import cookieParser from 'cookie-parser';
 
 const app : Express = express();
 
@@ -21,11 +22,16 @@ app.use(
     })
 );
 
+
 app.use(passport.session());
 
-app.use(cors<Request>());
+app.use(cors<Request>({
+  origin:`${process.env.APPURL}`,
+  credentials:true
+}));
 app.use(express.urlencoded({ extended: true}));
 app.use(express.json());
+app.use(cookieParser());
 
 const PORT = process.env.PORT || 3000
 

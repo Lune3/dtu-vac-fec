@@ -1,4 +1,4 @@
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { apiUrl } from "../config";
 import { CommentComponent } from "./comments";
 import { CommentsType } from "../types";
@@ -10,11 +10,12 @@ type SectionProps = {
     setComments: React.Dispatch<React.SetStateAction<CommentsType>>;
 }
 
+type authProp = SectionProps & {setAuthMessage : React.Dispatch<React.SetStateAction<boolean>>}
+
 const fetchComments = async (course: string, setComments: React.Dispatch<React.SetStateAction<CommentsType>>) => {
     if (course !== "") {
         const getComments = await fetch(`${apiUrl}/comment/${course}`);
         const commentsData = await getComments.json();
-        console.log(commentsData);
         setComments(commentsData);
     }
 }
@@ -27,7 +28,7 @@ function DefaultCommentView() {
     );
 }
 
-function PostComment({ course, comments, setComments }: SectionProps) {
+function PostComment({ course, comments, setComments, setAuthMessage }: authProp) {
     const submitComment: React.FormEventHandler<HTMLFormElement> = async (e) => {
         e.preventDefault();
         const commentData = e.target as HTMLFormElement;
@@ -43,6 +44,7 @@ function PostComment({ course, comments, setComments }: SectionProps) {
         try {
             const response = await fetch(`${apiUrl}/comment/${course}`, {
                 method: "POST",
+                credentials:"include",
                 headers: {
                     "Content-Type": "application/json",
                 },
@@ -52,13 +54,17 @@ function PostComment({ course, comments, setComments }: SectionProps) {
                     grade: (commentData.elements[2] as HTMLInputElement).value || "N/A",
                 })
             });
-            const updatedComments = [...(comments?.comments || []),newComment];
-            setComments({ comments: updatedComments });
-            console.log(comments);
+            if(response.status === 401){
+                setAuthMessage(true);
+            }
+            else{
+                const updatedComments = [...(comments?.comments || []),newComment];
+                setComments({ comments: updatedComments });
+            }
         } catch (error) {
             console.log(error);
         }
-    };
+    }; 
 
     return (
         <>
@@ -96,24 +102,42 @@ function PostComment({ course, comments, setComments }: SectionProps) {
     );
 }
 
-function CommentsComponent({ course, comments, setComments }: SectionProps) {
+function CommentsComponent({ course, comments, setComments, setAuthMessage }: authProp) {
     return (
         <>
             <h1>{course}</h1>
-            <PostComment course={course} comments={comments} setComments={setComments} />
+            <PostComment course={course} comments={comments} setComments={setComments} setAuthMessage={setAuthMessage}/>
             <CommentComponent comments={comments}/>
         </>
     );
 }
 
-function Section({ course, comments, setComments }: SectionProps) {
+function NotAuthorized ({setAuthMessage}: { setAuthMessage: React.Dispatch<React.SetStateAction<boolean>> }){
+    useEffect(() => {
+        const messageTime = setTimeout(() => {
+            setAuthMessage(false);
+        }, 1000);
+        return ()=>{
+            clearTimeout(messageTime);
+        }
+    })
+    return <>
+        <div>
+            <p>Please login to continue</p>
+        </div>
+    </>
+}
+
+function Section({ course, comments, setComments}: SectionProps) {
+    const [authMessage,setAuthMessage] = useState<boolean>(false);
     useEffect(() => {
         fetchComments(course, setComments);
     }, [course]);
 
     return (
         <section>
-            {course === "" ? <DefaultCommentView /> : <CommentsComponent course={course} comments={comments} setComments={setComments} />}
+            {authMessage === true ? <NotAuthorized setAuthMessage = {setAuthMessage}/> : <div></div>}
+            {course === "" ? <DefaultCommentView /> : <CommentsComponent course={course} comments={comments} setComments={setComments} setAuthMessage = {setAuthMessage} />}
         </section>
     );
 }
