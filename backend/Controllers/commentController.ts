@@ -17,6 +17,7 @@ export const getComment = async (req : Request,res : Response) => {
         res.status(500).json({message:"Server error"});
     }
 }   
+
 export const validateComment = [
     body("title").trim().isLength({min:3,max:100}).withMessage('Comment should be between 3 to 100 words')
     .escape(),
@@ -46,7 +47,8 @@ export const postComment = async (req : Request, res : Response) => {
                         title:req.body.title,
                         commentCourse:course.Id,
                         teacherName:req.body.teacherName,
-                        gradeObtain:req.body.grade
+                        gradeObtain:req.body.grade,
+                        commentUser:req.cookies['connect.sid']
                     }
                 })
                 res.status(200).json({newComment})
