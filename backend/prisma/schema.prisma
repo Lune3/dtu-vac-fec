@@ -16,9 +16,11 @@ datasource db {
 model User{
   Id String @id @default(uuid())
   email String @unique
+  userId BigInt @unique
   comment Comment[]
   isMod Boolean
   isAdmin Boolean
+  isBanned Boolean
 }
 
 model Course{

@@ -42,13 +42,14 @@ export const postComment = async (req : Request, res : Response) => {
                 res.status(400).json({message:"validation error"})
             }
             else{
+                const userId = req.user?.Id;
                 const newComment = await prisma.comment.create({
                     data:{
                         title:req.body.title,
                         commentCourse:course.Id,
                         teacherName:req.body.teacherName,
                         gradeObtain:req.body.grade,
-                        commentUser:req.cookies['connect.sid']
+                        commentUser:userId
                     }
                 })
                 res.status(200).json({newComment})

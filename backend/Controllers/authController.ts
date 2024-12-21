@@ -37,7 +37,7 @@ passport.use(new GoogleStrategy({
                 data:{
                     email:profile.emails[0].value,
                     isMod:false,
-                    isAdmin:false
+                    isAdmin:false,
                 }
             })
         }

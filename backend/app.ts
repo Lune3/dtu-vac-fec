@@ -10,25 +10,29 @@ import passport from 'passport';
 import cookieParser from 'cookie-parser';
 
 const app : Express = express();
-
+ 
 app.use(
     session({
       cookie:{
-        maxAge:7*24*60*60*1000
+        maxAge:7*24*60*60*1000,
+        httpOnly: true,
+        secure: false, // Set to true if using HTTPS
+        sameSite: 'lax',
       },
       secret: process.env.SESSION_SECRET!,
       resave: false,
       saveUninitialized: false,
+      
     })
 );
-
-
+ 
+ 
 app.use(passport.session());
 
 app.use(cors<Request>({
-  origin:`${process.env.APPURL}`,
+  origin:[`${process.env.APPURL}`,`${process.env.APPURL2}`],
   credentials:true
-}));
+})); 
 app.use(express.urlencoded({ extended: true}));
 app.use(express.json());
 app.use(cookieParser());
