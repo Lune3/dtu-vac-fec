@@ -43,6 +43,7 @@ export const postComment = async (req : Request, res : Response) => {
             }
             else{
                 const userId = req.user?.Id;
+                console.log(userId);
                 const newComment = await prisma.comment.create({
                     data:{
                         title:req.body.title,
@@ -51,8 +52,13 @@ export const postComment = async (req : Request, res : Response) => {
                         gradeObtain:req.body.grade,
                         commentUser:userId
                     }
+                });
+                const user = await prisma.user.findFirst({
+                    where:{
+                        Id:userId
+                    }
                 })
-                res.status(200).json({newComment})
+                res.status(200).json({newComment,user:user?.userId})
             }
         }
     } catch (error) {

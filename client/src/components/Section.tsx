@@ -33,14 +33,6 @@ function PostComment({ course, comments, setComments, setAuthMessage }: authProp
         e.preventDefault();
         const commentData = e.target as HTMLFormElement;
 
-        const newComment = {
-            Id: uuidv4(), 
-            title: (commentData.elements[0] as HTMLInputElement).value,
-            teacherName: (commentData.elements[1] as HTMLInputElement).value || "N/A",
-            gradeObtain: (commentData.elements[2] as HTMLInputElement).value || "N/A",
-            commentDate: new Date().toISOString(),
-        };
-
         try {
             const response = await fetch(`${apiUrl}/comment/${course}`, {
                 method: "POST",
@@ -58,7 +50,17 @@ function PostComment({ course, comments, setComments, setAuthMessage }: authProp
                 setAuthMessage(true);
             }
             else{
+                let commentResponse = await response.json();
+                const newComment = {
+                    Id: uuidv4(), 
+                    title: (commentData.elements[0] as HTMLInputElement).value,
+                    teacherName: (commentData.elements[1] as HTMLInputElement).value || "N/A",
+                    gradeObtain: (commentData.elements[2] as HTMLInputElement).value || "N/A",
+                    commentDate: new Date().toISOString(),
+                    userName:commentResponse.user
+                };
                 const updatedComments = [...(comments?.comments || []),newComment];
+                console.log(commentResponse);
                 setComments({ comments: updatedComments });
             }
         } catch (error) {

@@ -3,7 +3,8 @@ interface CommentType {
     teacherName: string;
     gradeObtain: string;
     Id:string;
-    commentDate:string
+    commentDate:string;
+    userName:string;
   }
    
 export interface CommentsType {

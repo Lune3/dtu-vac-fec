@@ -17,6 +17,29 @@ declare global {
 
 const GoogleStrategy = passportGoogle.Strategy;
 
+async function generateUniqueUsername() {
+    let username;
+    let isUnique = false;
+
+    while (!isUnique) {
+        const timestamp = Date.now().toString().slice(-5);
+        const randomDigits = Math.floor(1000 + Math.random() * 9000).toString(); 
+        username = `user${timestamp}${randomDigits}`;
+
+        const existingUser = await prisma.user.findUnique({
+            where:{
+                userId:username
+            }
+        });
+
+        if (!existingUser) {
+            isUnique = true;
+        }
+    }
+
+    return username;
+}
+
 
 passport.use(new GoogleStrategy({
     clientID: process.env.GOOGLE_ID!,
@@ -33,15 +56,24 @@ passport.use(new GoogleStrategy({
             }
         })
         if(!newUser){
-            newUser = await prisma.user.create({
-                data:{
-                    email:profile.emails[0].value,
-                    isMod:false,
-                    isAdmin:false,
-                }
-            })
+            let idGenerated = await generateUniqueUsername();
+            if(typeof(idGenerated) === 'undefined'){
+                return done("Internal Error",false);
+            }
+            else{
+                newUser = await prisma.user.create({
+                    data:{
+                        email:profile.emails[0].value,
+                        isMod:false,  
+                        isAdmin:false,
+                        isBanned:false,
+                        userId:idGenerated
+                    }
+                })
+                console.log("NewUser profile = ",newUser);
+                done(null,newUser); 
+            }
         }
-        done(null,newUser);
     }
     catch(error){
         console.log(error);
@@ -52,6 +84,7 @@ passport.use(new GoogleStrategy({
 
 
 passport.serializeUser((user,done) => {
+    console.log("user id from auth", user);
     done(null,user.Id);
 })
 

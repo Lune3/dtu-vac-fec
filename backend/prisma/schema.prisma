@@ -16,7 +16,7 @@ datasource db {
 model User{
   Id String @id @default(uuid())
   email String @unique
-  userId BigInt @unique
+  userId String @unique
   comment Comment[]
   isMod Boolean
   isAdmin Boolean
