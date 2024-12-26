@@ -12,7 +12,7 @@ function Comments({comments} : commentProp){
             <li key={comment.Id} className="border 1">
                 <div className="flex justify-between">
                     <div className="flex gap-5">
-                        <p>Username:{comment.userName}</p>
+                        <p>Username:{comment.commentUser}</p>
                         <p>Teacher Name: {comment.teacherName}</p>
                         <p>Grade Obtained: {comment.gradeObtain}</p>
                     </div>

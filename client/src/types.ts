@@ -4,7 +4,7 @@ interface CommentType {
     gradeObtain: string;
     Id:string;
     commentDate:string;
-    userName:string;
+    commentUser:string;
   }
    
 export interface CommentsType {

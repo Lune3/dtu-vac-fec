@@ -16,6 +16,7 @@ const fetchComments = async (course: string, setComments: React.Dispatch<React.S
     if (course !== "") {
         const getComments = await fetch(`${apiUrl}/comment/${course}`);
         const commentsData = await getComments.json();
+        console.log(commentsData);
         setComments(commentsData);
     }
 }
@@ -51,19 +52,21 @@ function PostComment({ course, comments, setComments, setAuthMessage }: authProp
             }
             else{
                 let commentResponse = await response.json();
+                console.log("new comment is = ",commentResponse);
                 const newComment = {
                     Id: uuidv4(), 
-                    title: (commentData.elements[0] as HTMLInputElement).value,
-                    teacherName: (commentData.elements[1] as HTMLInputElement).value || "N/A",
-                    gradeObtain: (commentData.elements[2] as HTMLInputElement).value || "N/A",
+                    title: commentResponse.newComment.title,
+                    teacherName: commentResponse.newComment.teacherName || "N/A",
+                    gradeObtain: commentResponse.newComment.gradeObtain || "N/A",
                     commentDate: new Date().toISOString(),
-                    userName:commentResponse.user
+                    commentUser:commentResponse.commentUser
                 };
                 const updatedComments = [...(comments?.comments || []),newComment];
-                console.log(commentResponse);
+                console.log(updatedComments);
                 setComments({ comments: updatedComments });
             }
-        } catch (error) {
+        }
+        catch (error) {
             console.log(error);
         }
     }; 

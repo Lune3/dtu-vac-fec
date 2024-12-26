@@ -38,6 +38,24 @@ function Header({setCourse }: HeaderProps) {
         setCourseName((courseData.elements[0] as HTMLInputElement).value);
     }
 
+    const logout = async function (event : React.MouseEvent<HTMLAnchorElement, MouseEvent>){
+        event.preventDefault();
+        try {
+            const response = await fetch(`${apiUrl}/auth/google/logout`, {
+                method: 'POST',
+                credentials:'include'
+            });
+    
+            if (response.redirected) {
+                window.location.href = response.url;
+            } else {
+                console.log('Logout successful but no redirection');
+            }
+        } catch (err) {
+            console.error('Error during logout:', err);
+        }
+    }
+
     return (
         <header className="flex justify-between p-3 border-b border-black">
             <div>
@@ -49,6 +67,7 @@ function Header({setCourse }: HeaderProps) {
             </form>
             <div>
                 <a href={`${apiUrl}/auth/google`}>Log In</a>
+                <a href="#" onClick={(event) => {logout(event)}}>Logout</a>
                 <picture>
                     change theme
                 </picture>

@@ -42,23 +42,23 @@ export const postComment = async (req : Request, res : Response) => {
                 res.status(400).json({message:"validation error"})
             }
             else{
-                const userId = req.user?.Id;
-                console.log(userId);
+                let userId : string = req.cookies['userId'];
+                const user = await prisma.user.findUnique({
+                    where:{
+                        Id:userId
+                    }
+                })
                 const newComment = await prisma.comment.create({
                     data:{
                         title:req.body.title,
                         commentCourse:course.Id,
                         teacherName:req.body.teacherName,
                         gradeObtain:req.body.grade,
-                        commentUser:userId
+                        commentUser:user?.userId!
                     }
-                });
-                const user = await prisma.user.findFirst({
-                    where:{
-                        Id:userId
-                    }
-                })
-                res.status(200).json({newComment,user:user?.userId})
+                }); 
+                
+                res.status(200).json({newComment})
             }
         }
     } catch (error) {

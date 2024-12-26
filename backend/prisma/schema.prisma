@@ -37,6 +37,6 @@ model Comment{
   course Course? @relation(fields: [commentCourse],references: [Id])
   teacherName String
   gradeObtain String
-  commentUser String?
-  user User? @relation(fields: [commentUser], references: [Id])
+  commentUser String
+  user User? @relation(fields: [commentUser], references: [userId])
 }

@@ -14,7 +14,7 @@ const app : Express = express();
 app.use(
     session({
       cookie:{
-        maxAge:7*24*60*60*1000,
+        maxAge:24*60*60*1000,
       },
       secret: process.env.SESSION_SECRET!,
       resave: false,
@@ -22,25 +22,25 @@ app.use(
       
     })
 );
- 
+  
  
 app.use(passport.session());
 
 app.use(cors<Request>({
-  origin:[`${process.env.APPURL}`,`${process.env.APPURL2}`],
-  credentials:true
-})); 
+    origin: `${process.env.APPURL}`, 
+    credentials: true, 
+  })); 
 app.use(express.urlencoded({ extended: true}));
 app.use(express.json());
 app.use(cookieParser());
 
-const PORT = process.env.PORT || 3000
+const PORT = parseInt(process.env.PORT!) || 3000
 
 app.use('/',rootRouter);
 app.use('/course',courseRouter);
 app.use('/comment',commentRouter);
 app.use('/auth/google',authRouter);
 
-app.listen(PORT,() => {
+app.listen(PORT,'0.0.0.0',() => {
     console.log("server running");
 })

@@ -1,4 +1,4 @@
-import { Request,Response} from "express";
+import { Request,Response,NextFunction} from "express";
 import passportGoogle from "passport-google-oauth20";
 import passport from "passport";
 import prisma from "../db";
@@ -14,7 +14,7 @@ declare global {
       }
     }
 }
-
+ 
 const GoogleStrategy = passportGoogle.Strategy;
 
 async function generateUniqueUsername() {
@@ -70,10 +70,9 @@ passport.use(new GoogleStrategy({
                         userId:idGenerated
                     }
                 })
-                console.log("NewUser profile = ",newUser);
-                done(null,newUser); 
             }
         }
+        done(null,newUser); 
     }
     catch(error){
         console.log(error);
@@ -84,7 +83,6 @@ passport.use(new GoogleStrategy({
 
 
 passport.serializeUser((user,done) => {
-    console.log("user id from auth", user);
     done(null,user.Id);
 })
 
@@ -102,4 +100,29 @@ passport.deserializeUser(async (newUserId : string,done) => {
     }
 })
 
+export const googleCallback = async (req : Request,res:Response) => {
+    if(req.user){
+        const {Id:userId} = req.user;
+        res.cookie("userId",userId,{
+            httpOnly:true,
+            sameSite:'lax',
+            maxAge:24*60*60*1000
+        });
+        res.redirect(`${process.env.APPURL}`);
+    }
+    else{
+        res.status(401).send("Authentication failed");
+    }
+}
+
+export const logout = async (req : Request,res : Response,next : NextFunction) => {
+    req.session.destroy(function (err) {
+        if(err){
+            res.status(400).json({err:'Logout Error'});
+        }
+        res.clearCookie('connect.sid',{path: '/'});
+        res.clearCookie('userId',{path:'/'});
+        res.redirect(`${process.env.APPURL}`); 
+    });
+}
 export default passport;
