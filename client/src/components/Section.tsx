@@ -2,7 +2,6 @@ import { useEffect, useState } from "react";
 import { apiUrl } from "../config";
 import { CommentComponent } from "./comments";
 import { CommentsType } from "../types";
-import { v4 as uuidv4 } from 'uuid';
 
 type SectionProps = {
     course: string;
@@ -54,12 +53,12 @@ function PostComment({ course, comments, setComments, setAuthMessage }: authProp
                 let commentResponse = await response.json();
                 console.log("new comment is = ",commentResponse);
                 const newComment = {
-                    Id: uuidv4(), 
+                    Id: commentResponse.newComment.Id, 
                     title: commentResponse.newComment.title,
                     teacherName: commentResponse.newComment.teacherName || "N/A",
                     gradeObtain: commentResponse.newComment.gradeObtain || "N/A",
                     commentDate: new Date().toISOString(),
-                    commentUser:commentResponse.commentUser
+                    commentUser:commentResponse.newComment.commentUser
                 };
                 const updatedComments = [...(comments?.comments || []),newComment];
                 console.log(updatedComments);
@@ -112,7 +111,7 @@ function CommentsComponent({ course, comments, setComments, setAuthMessage }: au
         <>
             <h1>{course}</h1>
             <PostComment course={course} comments={comments} setComments={setComments} setAuthMessage={setAuthMessage}/>
-            <CommentComponent comments={comments}/>
+            <CommentComponent comments={comments} setComments={setComments}/>
         </>
     );
 }

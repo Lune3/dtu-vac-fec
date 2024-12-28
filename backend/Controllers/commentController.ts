@@ -86,3 +86,17 @@ export const checkAuth = async(req : Request,res : Response,next: NextFunction) 
         next();
     }
 }
+
+export const deleteComment = async(req : Request,res : Response) => {
+    const commentId = req.params.commentId;
+    try {
+        const dbCommentDelete = await prisma.comment.delete({
+            where:{
+                Id:commentId
+            }
+        })
+        res.status(200).json({dbCommentDelete});
+    } catch (error) {
+        res.status(500).json({message:"Error in deleting comment",error});
+    }
+}

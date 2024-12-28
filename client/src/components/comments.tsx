@@ -1,12 +1,34 @@
+import React from "react";
 import { CommentsType } from "../types";
 import {format} from "date-fns"
+import { apiUrl } from "../config";
 
 type commentProp = {
-    comments: CommentsType
+    comments: CommentsType,
+    setComments: React.Dispatch<React.SetStateAction<CommentsType>>;
 }
 
-function Comments({comments} : commentProp){
+function Comments({comments,setComments} : commentProp){
+    function deleteComment(e : React.MouseEvent<HTMLImageElement>,commentId:string){
+        fetch(`${apiUrl}/comment/${commentId}`,{
+            method:"DELETE",
+            credentials:"include",
+        }).then(response => {
+            if (response.ok) {
+                const commentAfterDelete = comments.comments.filter((comment) => comment.Id !== commentId);
+                
+                setComments({ comments: commentAfterDelete });
+            } else {
+                console.error("Failed to delete the comment.");
+            }
+        }).catch(err => {
+            console.error("Error deleting the comment:", err);
+        });
+
+    }
     
+
+
     const CommentList = comments.comments.map((comment) =>{
         return (
             <li key={comment.Id} className="border 1">
@@ -16,7 +38,10 @@ function Comments({comments} : commentProp){
                         <p>Teacher Name: {comment.teacherName}</p>
                         <p>Grade Obtained: {comment.gradeObtain}</p>
                     </div>
-                    <p>{format(comment.commentDate,'dd/MM/yyyy')}</p>
+                    <div>
+                        <p>{format(comment.commentDate,'dd/MM/yyyy')}</p>
+                        <img onClick={(e) => {deleteComment(e,comment.Id)}} src="https://www.svgrepo.com/show/356373/trash-bin.svg" className="h-6 w-auto"/>
+                    </div>
                 </div> 
                 <p>Description: {comment.title}</p>
             </li>
