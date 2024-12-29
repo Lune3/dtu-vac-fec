@@ -15,7 +15,6 @@ const fetchComments = async (course: string, setComments: React.Dispatch<React.S
     if (course !== "") {
         const getComments = await fetch(`${apiUrl}/comment/${course}`);
         const commentsData = await getComments.json();
-        console.log(commentsData);
         setComments(commentsData);
     }
 }
@@ -51,7 +50,6 @@ function PostComment({ course, comments, setComments, setAuthMessage }: authProp
             }
             else{
                 let commentResponse = await response.json();
-                console.log("new comment is = ",commentResponse);
                 const newComment = {
                     Id: commentResponse.newComment.Id, 
                     title: commentResponse.newComment.title,
@@ -61,7 +59,6 @@ function PostComment({ course, comments, setComments, setAuthMessage }: authProp
                     commentUser:commentResponse.newComment.commentUser
                 };
                 const updatedComments = [...(comments?.comments || []),newComment];
-                console.log(updatedComments);
                 setComments({ comments: updatedComments });
             }
         }

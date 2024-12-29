@@ -23,7 +23,7 @@ const fetchCourse = async (courseName: string, setCourse: React.Dispatch<React.S
     }
 }
 
-function Header({setCourse }: HeaderProps) {
+function Header({setCourse}: HeaderProps) {
     const [courseName, setCourseName] = useState<string>("");
     useEffect(() => {
         fetchCourse(courseName,setCourse);
@@ -45,7 +45,7 @@ function Header({setCourse }: HeaderProps) {
                 method: 'POST',
                 credentials:'include'
             });
-    
+            
             if (response.redirected) {
                 window.location.href = response.url;
             } else {

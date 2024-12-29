@@ -8,6 +8,7 @@ import cors from "cors";
 import { authRouter } from './Routes/authRouter';
 import passport from 'passport';
 import cookieParser from 'cookie-parser';
+import { userRouter } from './Routes/userRouter';
 
 const app : Express = express();
  
@@ -40,6 +41,7 @@ app.use('/',rootRouter);
 app.use('/course',courseRouter);
 app.use('/comment',commentRouter);
 app.use('/auth/google',authRouter);
+app.use('/user',userRouter);
 
 app.listen(PORT,'0.0.0.0',() => {
     console.log("server running");

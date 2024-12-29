@@ -1,15 +1,35 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import { CommentsType } from "../types";
 import {format} from "date-fns"
 import { apiUrl } from "../config";
+import Cookies from "js-cookie";
 
 type commentProp = {
     comments: CommentsType,
     setComments: React.Dispatch<React.SetStateAction<CommentsType>>;
 }
 
+async function getUser(setUserId:React.Dispatch<React.SetStateAction<string>>){
+    const sendUserRequest = await fetch(`${apiUrl}/user`,{
+        method:'GET',
+        credentials:'include', 
+        headers:{
+            "Content-Type": "application/json",
+        }
+    });
+    const userDetail = await sendUserRequest.json();
+    if(userDetail){ 
+        setUserId(userDetail.user.userId);
+    }
+}
+
 function Comments({comments,setComments} : commentProp){
-    function deleteComment(e : React.MouseEvent<HTMLImageElement>,commentId:string){
+    const [userId,setUserId] = useState<string>("");
+    // useEffect(() => {
+    //     getUser(setUserId);
+    // },[])
+
+    function deleteComment(commentId:string){
         fetch(`${apiUrl}/comment/${commentId}`,{
             method:"DELETE",
             credentials:"include",
@@ -24,12 +44,10 @@ function Comments({comments,setComments} : commentProp){
         }).catch(err => {
             console.error("Error deleting the comment:", err);
         });
-
-    }
-    
-
+}
 
     const CommentList = comments.comments.map((comment) =>{
+    
         return (
             <li key={comment.Id} className="border 1">
                 <div className="flex justify-between">
@@ -40,7 +58,7 @@ function Comments({comments,setComments} : commentProp){
                     </div>
                     <div>
                         <p>{format(comment.commentDate,'dd/MM/yyyy')}</p>
-                        <img onClick={(e) => {deleteComment(e,comment.Id)}} src="https://www.svgrepo.com/show/356373/trash-bin.svg" className="h-6 w-auto"/>
+                        {userId === comment.commentUser? <img onClick={() => {deleteComment(comment.Id)}} src="https://www.svgrepo.com/show/356373/trash-bin.svg" className="h-6 w-auto"/>: <></>}
                     </div>
                 </div> 
                 <p>Description: {comment.title}</p>
