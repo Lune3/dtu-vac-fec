@@ -28,7 +28,7 @@ app.use(
 app.use(passport.session());
 
 app.use(cors<Request>({
-    origin: `${process.env.APPURL}`, 
+    origin: process.env.APPURL, 
     credentials: true, 
   })); 
 app.use(express.urlencoded({ extended: true}));

@@ -7,7 +7,6 @@ import { CommentsType } from "./types";
 function App() {
   const [course,setCourse] = useState<string>("");
   const [comments,setComments] = useState<CommentsType>({comments:[]});
-  const [isAuth,setIsAuth] = useState<boolean>(false);
 
   return (
     <>

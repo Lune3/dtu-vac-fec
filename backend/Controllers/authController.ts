@@ -120,9 +120,11 @@ export const logout = async (req : Request,res : Response,next : NextFunction) =
         if(err){
             res.status(400).json({err:'Logout Error'});
         }
-        res.clearCookie('connect.sid',{path: '/'});
-        res.clearCookie('userId',{path:'/'});
-        res.redirect(`${process.env.APPURL}`); 
+        else{
+            res.clearCookie('connect.sid',{path: '/'});
+            res.clearCookie('userId',{path:'/'});
+            res.redirect(process.env.APPURL!); 
+        }
     });
 }
 export default passport;

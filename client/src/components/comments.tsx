@@ -2,7 +2,6 @@ import React, { useEffect, useState } from "react";
 import { CommentsType } from "../types";
 import {format} from "date-fns"
 import { apiUrl } from "../config";
-import Cookies from "js-cookie";
 
 type commentProp = {
     comments: CommentsType,
@@ -25,9 +24,9 @@ async function getUser(setUserId:React.Dispatch<React.SetStateAction<string>>){
 
 function Comments({comments,setComments} : commentProp){
     const [userId,setUserId] = useState<string>("");
-    // useEffect(() => {
-    //     getUser(setUserId);
-    // },[])
+    useEffect(() => {
+        getUser(setUserId);
+    },[])
 
     function deleteComment(commentId:string){
         fetch(`${apiUrl}/comment/${commentId}`,{

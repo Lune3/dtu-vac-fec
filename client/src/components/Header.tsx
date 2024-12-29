@@ -6,6 +6,7 @@ type HeaderProps = {
 };
 
 
+
 const fetchCourse = async (courseName: string, setCourse: React.Dispatch<React.SetStateAction<string>>) => {
     if(courseName != ""){
         const url = `${apiUrl}/course/${courseName}`;
@@ -38,19 +39,13 @@ function Header({setCourse}: HeaderProps) {
         setCourseName((courseData.elements[0] as HTMLInputElement).value);
     }
 
-    const logout = async function (event : React.MouseEvent<HTMLAnchorElement, MouseEvent>){
-        event.preventDefault();
+    const logout = async function (){
         try {
             const response = await fetch(`${apiUrl}/auth/google/logout`, {
                 method: 'POST',
                 credentials:'include'
             });
-            
-            if (response.redirected) {
-                window.location.href = response.url;
-            } else {
-                console.log('Logout successful but no redirection');
-            }
+            setCourseName("");
         } catch (err) {
             console.error('Error during logout:', err);
         }
@@ -67,7 +62,7 @@ function Header({setCourse}: HeaderProps) {
             </form>
             <div>
                 <a href={`${apiUrl}/auth/google`}>Log In</a>
-                <a href="#" onClick={(event) => {logout(event)}}>Logout</a>
+                <a href="" onClick={logout}>Logout</a>
                 <picture>
                     change theme
                 </picture>
